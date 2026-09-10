@@ -1,0 +1,37 @@
+{
+  "name": "insurefin-management-system",
+  "version": "1.0.0",
+  "description": "InsureFin - Insurance & Finance Management System",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server/server.js",
+    "server": "node server/server.js",
+    "seed": "node server/seed.js",
+    "test": "node server/test_e2e.js",
+    "client": "npm.cmd --prefix client run dev",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"node server/server.js\" \"npm.cmd --prefix client run dev\"",
+    "build": "npm.cmd --prefix client run build",
+    "install:all": "npm.cmd install && npm.cmd --prefix client install"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^4.22.2",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.24.4"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "keywords": [
+    "insurance",
+    "finance",
+    "policy-management",
+    "claims",
+    "premiums"
+  ],
+  "author": "Antigravity",
+  "license": "MIT"
+}
