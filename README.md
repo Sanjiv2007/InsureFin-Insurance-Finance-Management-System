@@ -2,7 +2,7 @@ InsureFin — Insurance and Finance Management System
 
 A full-stack web application for managing insurance policies, premium payments, claims, users, and financial transactions through a centralized platform.
 
-InsureFin provides separate role-based interfaces for Clients, Staff, and Administrators, allowing each user type to perform the operations relevant to their responsibilities.
+InsureFin provides separate role-based interfaces for Clients, Staff, and Administrators, allowing each user type to perform operations according to their responsibilities.
 
 ---
 
@@ -12,13 +12,14 @@ InsureFin is designed to simplify and centralize insurance and finance-related o
 
 The system allows clients to:
 
-- Register and log in securely
+- Register and log in
 - Browse available insurance plans
 - Apply for insurance policies
 - View subscribed policies
 - Track premium payments
 - File and track insurance claims
-- View financial transaction history
+- View financial transactions
+- Manage profile information
 
 Staff members can review assigned policies and claims, while administrators can manage users, policies, claims, payments, and reports.
 
@@ -35,11 +36,17 @@ UI Icons| Lucide React
 Routing| React Router
 API Communication| Axios
 Backend| Node.js, Express.js
-Database| MySQL
+Database| MongoDB
 Authentication| JWT
 Password Security| bcrypt
 Version Control| Git, GitHub
-Frontend Deployment| GitHub Pages
+Deployment| GitHub Pages
+
+The intended architecture follows the MERN-style approach:
+
+MongoDB + Express.js + React.js + Node.js
+
+MongoDB provides the database layer, Express and Node.js provide the application/server layer, and React provides the presentation layer.
 
 ---
 
@@ -54,7 +61,7 @@ Clients can:
 - Browse insurance plans
 - Apply for policies
 - View active policies
-- Make premium payments
+- Track premium payments
 - File insurance claims
 - Track claim status
 - View transactions
@@ -90,18 +97,18 @@ Administrators can:
 
 #| Feature| Description
 1| User Registration| New clients can create an account
-2| Authentication| Secure login for Client, Staff and Admin roles
-3| Role-Based Access| Different dashboards and permissions for each role
-4| Insurance Browsing| View available insurance categories and plans
-5| Policy Management| Apply for and manage insurance policies
+2| Authentication| Login for Client, Staff and Admin
+3| Role-Based Access| Different permissions for each role
+4| Insurance Browsing| View available insurance plans
+5| Policy Management| Apply for and manage policies
 6| Premium Payments| Record and track premium payments
 7| Claims| File and track insurance claims
 8| Transactions| View financial transaction history
-9| Staff Review| Staff can review assigned policies and claims
-10| Admin Management| Admin can manage users, policies and claims
-11| Dashboards| Role-specific dashboards with key statistics
-12| Reports| Administrative reports and policy information
-13| Search & Filtering| Search and filter users and policy records
+9| Staff Review| Review assigned policies and claims
+10| Admin Management| Manage users, policies and claims
+11| Dashboards| Role-specific dashboards
+12| Reports| Administrative reporting
+13| Search & Filtering| Search and filter records
 14| Profile Management| Manage user profile information
 
 ---
@@ -156,84 +163,164 @@ Reports & Management
 
 6. System Architecture
 
-InsureFin follows a client-server full-stack architecture.
-
-┌─────────────────────────────┐
-│          Users              │
-│ Client | Staff | Admin      │
-└──────────────┬──────────────┘
+┌──────────────────────────────┐
+│            Users             │
+│ Client | Staff | Admin       │
+└──────────────┬───────────────┘
                │
                ▼
-┌─────────────────────────────┐
-│     React + Vite Frontend   │
-│       User Interface        │
-└──────────────┬──────────────┘
+┌──────────────────────────────┐
+│      React + Vite Frontend   │
+│        User Interface        │
+└──────────────┬───────────────┘
+               │
                │ Axios / REST API
                ▼
-┌─────────────────────────────┐
-│    Node.js + Express API    │
-│ Authentication & Business   │
-│ Logic / Authorization       │
-└──────────────┬──────────────┘
+┌──────────────────────────────┐
+│     Node.js + Express API    │
+│ Authentication & Business    │
+│ Logic / Authorization        │
+└──────────────┬───────────────┘
                │
                ▼
-┌─────────────────────────────┐
-│          MySQL              │
-│ Users | Policies | Claims   │
-│ Payments | Transactions     │
-└─────────────────────────────┘
+┌──────────────────────────────┐
+│           MongoDB            │
+│ Users | Policies | Claims    │
+│ Payments | Transactions      │
+└──────────────────────────────┘
 
 ---
 
 7. Authentication & Security
 
-The application includes basic authentication and authorization mechanisms.
+InsureFin includes several basic security mechanisms.
 
-Authentication
+JWT Authentication
 
-- Login using email and password
-- JWT-based authentication
-- Authenticated user session management
+JSON Web Tokens are used to maintain authenticated sessions and identify logged-in users when communicating with protected APIs.
 
-Password Security
+Password Hashing
 
-- Passwords are hashed using bcrypt
-- Plain-text passwords are not intended to be stored in the database
+Passwords are protected using bcrypt hashing rather than storing passwords as plain text.
 
 Role-Based Authorization
 
-The system separates access based on:
+Access is separated into:
 
 - "CLIENT"
 - "STAFF"
 - "ADMIN"
 
-Users are redirected to their respective dashboards after successful authentication.
+Each role has access to its appropriate modules and dashboard.
 
-Validation
+Input Validation
 
-The application validates important registration and login fields before processing requests.
+Important registration and login fields are validated before requests are processed.
 
----
+Environment Variables
 
-8. Database
+Sensitive configuration such as database connection information and application secrets should be stored using environment variables rather than directly in source code.
 
-The application uses MySQL for persistent data management.
+CORS
 
-The main data areas include:
+Cross-Origin Resource Sharing is configured so that the frontend can communicate with the backend API.
 
-- Users
-- Clients
-- Policies
-- Claims
-- Payments
-- Transactions
+Database Security
 
-These entities support the complete insurance workflow from registration and policy application to payments and claims.
+MongoDB supports authentication, authorization and other security mechanisms for protecting database deployments.
 
 ---
 
-9. Project Structure
+8. MongoDB Database Design
+
+The database layer is designed around the major entities of the insurance system.
+
+Expected MongoDB collections include:
+
+users
+policies
+claims
+payments
+transactions
+
+MongoDB stores data as flexible documents inside collections.
+
+This document-oriented structure is suitable for applications where the data model can evolve as additional insurance features are introduced.
+
+---
+
+9. Main Data Flow
+
+User
+  ↓
+React Frontend
+  ↓
+Axios Request
+  ↓
+Express REST API
+  ↓
+Authentication / Authorization
+  ↓
+Business Logic
+  ↓
+MongoDB
+  ↓
+API Response
+  ↓
+React Interface
+
+The system follows this flow for major operations such as:
+
+- Login
+- Registration
+- Policy application
+- Premium payment
+- Claim submission
+- Transaction tracking
+
+---
+
+10. Technical Concepts Used
+
+Frontend
+
+- React components
+- React Router
+- State management
+- Form handling
+- API integration using Axios
+- Responsive UI
+
+Backend
+
+- Node.js
+- Express.js
+- REST APIs
+- Middleware
+- Authentication
+- Role-based authorization
+- Error handling
+
+Database
+
+- MongoDB
+- Collections
+- Documents
+- CRUD operations
+- Database queries
+
+Security
+
+- JWT
+- bcrypt
+- Input validation
+- Environment variables
+- CORS
+- Role-based access control
+
+---
+
+11. Project Structure
 
 InsureFin-Insurance-Finance-Management-System/
 │
@@ -255,12 +342,9 @@ InsureFin-Insurance-Finance-Management-System/
 │   └── vite.config.js
 │
 ├── server/
-│   ├── config/
 │   ├── controllers/
 │   ├── middleware/
 │   ├── routes/
-│   ├── database.sql
-│   ├── seed.js
 │   └── server.js
 │
 ├── .gitignore
@@ -269,32 +353,24 @@ InsureFin-Insurance-Finance-Management-System/
 
 ---
 
-10. Project Setup
+12. Running the Application
 
 Prerequisites
 
-Install the following:
+Install:
 
 - Node.js
 - npm
-- MySQL
+- MongoDB or MongoDB Atlas
 - Git
 
----
-
-Clone the Repository
+Clone Repository
 
 git clone https://github.com/Sanjiv2007/InsureFin-Insurance-Finance-Management-System.git
 
-Navigate to the project:
-
 cd InsureFin-Insurance-Finance-Management-System
 
----
-
-11. Install Dependencies
-
-Install the root dependencies:
+Install Dependencies
 
 npm install
 
@@ -302,44 +378,33 @@ Install frontend dependencies:
 
 cd client
 npm install
-
-Return to the project root:
-
 cd ..
 
 ---
 
-12. Database Setup
+13. MongoDB Configuration
 
-Make sure MySQL is installed and running.
-
-Create the database:
-
-CREATE DATABASE insurance_finance;
-
-Configure the database connection using environment variables.
+For the MongoDB implementation, configure the MongoDB connection using an environment variable.
 
 Example:
 
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_mysql_password
-DB_NAME=insurance_finance
-DB_PORT=3306
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-url>/<database>
+PORT=5000
+JWT_SECRET=your_secret_key
 
-The backend uses these values to connect to MySQL.
+The MongoDB connection string should be kept private and should not be committed to GitHub.
+
+MongoDB's official Node.js documentation recommends using a connection URI and keeping connection credentials secure.
 
 ---
 
-13. Running the Application
-
-Start the Backend
+14. Running the Backend
 
 From the project root:
 
 npm run server
 
-The backend runs on:
+Backend:
 
 http://localhost:5000
 
@@ -347,13 +412,15 @@ API base URL:
 
 http://localhost:5000/api
 
-Start the Frontend
+---
+
+15. Running the Frontend
 
 Open another terminal:
 
 npm run client
 
-The frontend runs on:
+Frontend:
 
 http://localhost:5173
 
@@ -363,73 +430,80 @@ http://localhost:5173
 
 ---
 
-14. Demo Login
+16. Demo Credentials
 
-For local demonstration, the application provides demo credentials.
+For academic demonstration:
 
 Role| Email| Password
 Admin| admin@gmail.com| 123456
 Staff| staff@gmail.com| 123456
 Client| rahul@gmail.com| 123456
 
-The Login page also provides Demo Credentials Quick-Fill buttons for convenient testing.
+The Login page also provides Demo Credentials Quick-Fill buttons.
 
-«These credentials are intended for academic demonstration purposes.»
+«These credentials are for academic demonstration purposes only.»
 
 ---
 
-15. Frontend Deployment
+17. Deployment
 
-The frontend has been deployed using GitHub Pages.
-
-Live frontend:
+The React frontend has been deployed using GitHub Pages.
 
 https://sanjiv2007.github.io/InsureFin-Insurance-Finance-Management-System/
 
-The GitHub Pages deployment hosts the frontend only.
+The GitHub Pages deployment hosts the frontend.
 
-The complete full-stack application requires the Node.js backend and database to be available separately.
-
----
-
-16. Important Project Limitation
-
-The current GitHub Pages deployment is frontend-only.
-
-The backend API runs locally during development:
-
-Frontend → http://localhost:5173
-Backend  → http://localhost:5000
-Database → MySQL
-
-Therefore, the deployed GitHub Pages frontend should not be considered a complete public production deployment of the backend and database.
-
-For full functionality during development and demonstration, run the frontend and backend locally.
+The complete full-stack application requires the backend API and MongoDB database to be available separately.
 
 ---
 
-17. Future Enhancements
+18. Current Review-Stage Database Plan
 
-Possible future improvements include:
+The project is being transitioned from the initial database implementation to MongoDB as the target database for the final version.
 
+The review presentation and project architecture use MongoDB as the intended database layer.
+
+The database migration will be completed after the review without changing the main frontend workflow or application modules.
+
+---
+
+19. Limitations
+
+The current project is primarily an academic implementation.
+
+Current limitations include:
+
+- Backend is not hosted publicly with the GitHub Pages frontend
+- Payment processing is an academic workflow rather than a production payment gateway
+- Production-level monitoring is not implemented
+- Advanced authentication such as 2FA is not currently included
+- MongoDB migration is part of the next implementation stage
+
+---
+
+20. Future Enhancements
+
+Possible improvements include:
+
+- Complete MongoDB integration
 - Cloud deployment of the backend
-- Cloud-hosted database
+- MongoDB Atlas deployment
 - Real payment gateway integration
 - Email and SMS notifications
-- Document upload for claims
-- Advanced analytics and dashboards
+- Claim document uploads
+- Advanced analytics
 - Two-factor authentication
 - Improved audit logging
-- Production-level security and monitoring
+- Production-level monitoring
 - Mobile application support
 
 ---
 
-18. Project Outcome
+21. Project Outcome
 
-InsureFin demonstrates how a full-stack application can be used to manage insurance and financial operations through a centralized platform.
+InsureFin demonstrates the development of a full-stack insurance and finance management platform.
 
-The project integrates:
+The system combines:
 
 React
    ↓
@@ -437,18 +511,33 @@ REST APIs
    ↓
 Node.js + Express
    ↓
-MySQL
+MongoDB
 
-with authentication and role-based access for Clients, Staff and Administrators.
+with authentication and role-based access control.
 
-The application provides a structured workflow for insurance policies, premium payments, claims and financial transactions in a single system.
+The application provides a structured workflow for:
+
+- Insurance policies
+- Premium payments
+- Claims
+- Users
+- Financial transactions
 
 ---
 
-19. Conclusion
+22. Conclusion
 
-InsureFin provides a centralized and user-friendly approach to insurance and finance management.
+InsureFin provides a centralized approach to insurance and finance management.
 
-By combining a React frontend, Node.js/Express backend, MySQL database, authentication and role-based access control, the system demonstrates the major concepts involved in full-stack web application development.
+The project demonstrates important full-stack development concepts including:
 
-The project can be further extended into a production-ready insurance management platform by adding cloud deployment, real payment processing, advanced security and additional automation.
+- Frontend development
+- REST API development
+- Database management
+- Authentication
+- Authorization
+- Password security
+- Role-based workflows
+- API communication
+
+The system can be further developed into a production-ready insurance management platform through cloud deployment, real payment processing, advanced security, notifications and analytics.
